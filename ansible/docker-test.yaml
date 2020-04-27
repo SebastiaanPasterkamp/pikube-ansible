@@ -1,0 +1,16 @@
+---
+- hosts:
+    - pikube-test-master
+    - pikube-test-node-01
+  roles:
+    - raspberry_pi
+    - docker
+    - kubernetes_common
+- hosts:
+    - pikube-test-master
+  roles:
+    - kubernetes_master
+- hosts:
+    - pikube-test-node-01
+  roles:
+    - kubernetes_node

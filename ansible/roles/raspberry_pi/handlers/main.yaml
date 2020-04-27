@@ -1,3 +1,4 @@
 ---
 - name: reboot system
   reboot: {}
+  when: can_reboot|default(true)

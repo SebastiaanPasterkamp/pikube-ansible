@@ -1,5 +1,10 @@
 # Raspberry Pi Kubernetes cluster
 
+Using references from:
+* https://illegalexception.schlichtherle.de/kubernetes/2019/09/12/provisioning-a-kubernetes-cluster-on-raspberry-pi-with-ansible/
+* https://itnext.io/building-a-kubernetes-cluster-on-raspberry-pi-and-low-end-equipment-part-1-a768359fbba3
+* https://github.com/chrismeyersfsu/role-iptables
+
 ## Setting up the RPi disks
 
 1. Get the latest Raspbian (Buster) Lite image from the
@@ -58,3 +63,16 @@
       $MOUNT/rootfs/etc/hostname \
       $MOUNT/rootfs/etc/hosts
     ```
+
+## Provisioning with Ansible
+
+We'll be using ansible to provision the Raspberry Pi machines once they're
+running.
+
+### Set up the Ansible environment
+
+```bash
+python3 -m venv .pikube
+. .pikube/bin/activate
+pip install -r requirements.txt
+```

@@ -1,0 +1,46 @@
+---
+- name: use {{ item }}-legacy
+  alternatives:
+    name: '{{ item }}'
+    path: /usr/sbin/{{ item }}-legacy
+  failed_when: false
+  with_items:
+    - arptables
+    - ebtables
+    - iptables
+    - ip6tables
+
+- name: add apt-key for k8s
+  apt_key:
+    id: '{{ kubernetes.apt_key_id }}'
+    url: '{{ kubernetes.apt_key_url }}'
+
+- name: add apt-repository for Kubernetes
+  apt_repository:
+    repo: '{{ kubernetes.apt_repository }}'
+  notify: apt-get update
+
+- meta: flush_handlers
+
+- name: install Kubernetes
+  apt:
+    force_apt_get: true
+    name:
+      - 'kubernetes-cni={{ version.kubernetes_cni }}'
+      - 'kubeadm={{ version.kubernetes }}'
+      - 'kubectl={{ version.kubernetes }}'
+      - 'kubelet={{ version.kubernetes }}'
+    update_cache: true
+  notify: restart Kubernetes
+
+- name: hold k8s updates
+  dpkg_selections:
+    name: '{{ item }}'
+    selection: hold
+  with_items:
+    - kubeadm
+    - kubectl
+    - kubelet
+    - kubernetes-cni
+
+- meta: flush_handlers

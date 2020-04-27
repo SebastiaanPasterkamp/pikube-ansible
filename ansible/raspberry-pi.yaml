@@ -1,0 +1,15 @@
+---
+- hosts:
+    - pikube-master
+  roles:
+    - raspberry_pi
+    - docker
+    - kubernetes_common
+    - kubernetes_master
+# - hosts:
+#     - pikube-node-01
+#   roles:
+#     - raspberry_pi
+#     - docker
+#     - kubernetes_common
+#     - kubernetes_node

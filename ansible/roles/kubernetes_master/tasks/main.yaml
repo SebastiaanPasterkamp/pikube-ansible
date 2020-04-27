@@ -1,0 +1,70 @@
+---
+- name: Make sure ansible_default_ipv4 is set
+  assert:
+    that:
+      - ansible_default_ipv4.address is defined
+    fail_msg: "Please install 'iproute2' or equivalent"
+
+- name: kubeadm init
+  command: |
+    kubeadm init \
+      --apiserver-advertise-address={{ ansible_default_ipv4.address }} \
+      --pod-network-cidr='10.244.0.0/16'
+  become: true
+  args:
+    creates: /etc/kubernetes/kubelet.conf
+
+- name: fetch k8s config
+  become: yes
+  become_method: sudo
+  fetch:
+    dest: build/k8s-config.yaml
+    flat: true
+    src: /etc/kubernetes/admin.conf
+
+- name: apply flannel
+  become: yes
+  become_method: sudo
+  changed_when: "'created' in flannel_up.stdout \
+                or 'configured' in flannel_up.stdout"
+  register: flannel_up
+  shell: |
+    kubectl \
+      --kubeconfig=/etc/kubernetes/admin.conf \
+      apply \
+      --filename=https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+- name: register k8s token
+  become: yes
+  become_method: sudo
+  changed_when: false
+  shell: kubeadm token list | awk 'NR == 2 { print $1 }'
+  register: k8s_token
+
+- name: save k8s token
+  local_action:
+    module: copy
+    content: "{{ k8s_token.stdout }}\n"
+    dest: build/k8s-token
+  vars:
+    ansible_become: false
+
+- name: apply post-master-up hooks
+  become: yes
+  become_method: sudo
+  changed_when: "'created' in post_master_up.stdout \
+                or 'configured' in post_master_up.stdout"
+  local_action:
+    module: |
+      command kubectl \
+        --kubeconfig=build/k8s-config.yaml \
+        apply \
+        --filename=hooks/{{ item }}.yaml
+    # it doesn't, but it prevents this step from running if it is
+    removes: 'hooks/{{ item }}.yaml'
+  register: post_master_up
+  vars:
+    ansible_become: false
+  with_items:
+    - k8s-post-master-up
+    - post-master-up

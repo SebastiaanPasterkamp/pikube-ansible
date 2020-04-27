@@ -1,0 +1,15 @@
+---
+- name: apt-get update
+  apt:
+    force_apt_get: true
+    update_cache: true
+
+# Don't use systemd ansible command; it drops the ssh connection and fails
+- name: restart Kubernetes
+  shell: |
+    systemctl daemon-reload
+    systemctl enable kubelet.service
+    systemctl restart kubelet.service
+    systemctl is-active kubelet.service
+  async: 1
+  poll: 0

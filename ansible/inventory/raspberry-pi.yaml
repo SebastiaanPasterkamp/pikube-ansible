@@ -1,0 +1,34 @@
+---
+all:
+  hosts:
+    # Use only IP addresses here!
+    pikube-master:
+      ansible_host: 192.168.178.33
+    pikube-node-01:
+      ansible_host: 192.168.178.32
+  vars:
+    ansible_python_interpreter: /usr/bin/python
+    ansible_user: pi
+  children:
+    raspberry_pi:
+      hosts:
+        pikube-master:
+          # mounts:
+          #   - path: /media/storage
+          #     uuid: 53d540fe-ec95-4495-b0ab-f818ed294676
+          #     type: ext4
+          #     opts: noatime,rw,nouser
+        pikube-node-01:
+      vars:
+        gpu_mem: 16
+        arm_64bit: 1
+        tmpfs:
+          - path: /tmp
+            opts: defaults,noatime
+          - path: /var/log
+            opts: defaults,noatime,size=64m
+    docker:
+      hosts:
+        pikube-master:
+          # daemon_extra:
+          #   data-root: /media/storage/docker

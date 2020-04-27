@@ -1,0 +1,27 @@
+---
+all:
+  hosts:
+    pikube-test-master:
+      ansible_ssh_port: 5000
+    pikube-test-node-01:
+      ansible_ssh_port: 5001
+  vars:
+    ansible_python_interpreter: /usr/bin/python
+    ansible_host: 127.0.0.1
+    ansible_user: pi
+    hosts_file: /etc/fake-hosts
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+    can_reboot: false
+  children:
+    raspberry_pi:
+      hosts:
+        pikube-test-master:
+        pikube-test-node-01:
+      vars:
+        gpu_mem: 16
+        arm_64bit: 1
+        tmpfs:
+          - path: /tmp
+            opts: defaults,noatime
+          - path: /var/log
+            opts: defaults,noatime,size=64m

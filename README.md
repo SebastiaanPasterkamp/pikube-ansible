@@ -63,6 +63,9 @@ Using references from:
       $MOUNT/rootfs/etc/hostname \
       $MOUNT/rootfs/etc/hosts
     ```
+    Use either `pikube-master` for the first Kubernetes node, which will become
+    the controller, or `pikube-node-01` and up for each new worker node added to
+    the cluster.
 
 ## Provisioning with Ansible
 
@@ -75,4 +78,53 @@ running.
 python3 -m venv .pikube
 . .pikube/bin/activate
 pip install -r requirements.txt
+```
+
+### Test ansible with docker
+
+Run the tests on docker containers.
+
+```bash
+make test
+```
+
+This will:
+1. Run `make lint` to `yamllint` the `ansible` directory.
+2. Run `make launch`, which will:
+    1. Run `make build` the mock Raspberry Pi docker images.
+    2. Then launch the containers defined in the `inventory/docker-test.yaml`
+        inventory file.
+3. Run `make deploy` with the `docker-test.yaml` playbook and the previously
+    mentioned inventory file.
+4. Run `make shutdown` to bring down the docker containers once we're finished.
+
+### Prepare the ansible playbook
+
+#### Define the target Pi's
+
+Update the `ansible/inventory/raspberry-pi.yaml` and configure the target
+hosts by name, and IP address. Ony use IP addresses, so they can be re-used
+in the `/etc/hosts` files on the target machines. Do not use DNS names.
+
+#### Configure external storage
+
+Optionally define a known external storage device by `uuid` in the `mounts`
+part. The mount path for the external storage may be used as docker data-root if
+configured so below. You can find the UUID's while preparing the raspberry pi
+image using the following command:
+
+```bash
+lsblk -pf
+```
+
+### Apply the ansible playbook to live Raspberry Pi nodes
+
+Once all Pi's are running you can deploy the Kubernetes cluster using the
+following command:
+
+```bash
+make deploy \
+    VERBOSITY="-vv" \
+    PLAYBOOK="raspberry-pi.yaml" \
+    INVENTORY="inventory/raspberry-pi.yaml"
 ```

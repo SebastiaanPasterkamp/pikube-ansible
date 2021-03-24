@@ -10,6 +10,7 @@
     - pikube-test-master
   roles:
     - kubernetes_master
+    - nfs-server
 - hosts:
     - pikube-test-node-01
   roles:

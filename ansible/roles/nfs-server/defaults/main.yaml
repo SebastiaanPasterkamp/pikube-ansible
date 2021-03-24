@@ -1,0 +1,8 @@
+---
+ansible_become: true
+os_id: '{{ ansible_lsb.id.lower() }}'
+os_code: '{{ ansible_lsb.codename.lower() }}'
+
+exports:
+  path: /media/storage/exports
+  ip_range: 192.168.178.0/24

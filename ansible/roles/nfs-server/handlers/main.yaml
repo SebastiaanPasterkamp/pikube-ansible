@@ -1,0 +1,24 @@
+---
+# Don't use systemd ansible command; it drops the ssh connection and fails
+- name: restart NFS
+  shell: |
+    systemctl daemon-reload
+    systemctl enable nfs-kernel-server
+    systemctl restart nfs-kernel-server
+    systemctl is-active nfs-kernel-server
+  async: 1
+  poll: 0
+
+- name: restart RPCBind
+  shell: |
+    systemctl daemon-reload
+    systemctl enable rpcbind
+    systemctl restart rpcbind
+    systemctl is-active rpcbind
+  async: 1
+  poll: 0
+
+- name: export shares
+  shell: exportfs -ra
+  async: 1
+  poll: 0

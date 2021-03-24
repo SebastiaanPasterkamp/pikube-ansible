@@ -3,6 +3,7 @@
     - pikube-master
   roles:
     - raspberry_pi
+    - nfs-server
     - docker
     - kubernetes_common
     - kubernetes_master

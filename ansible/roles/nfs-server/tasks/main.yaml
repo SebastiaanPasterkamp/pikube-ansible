@@ -1,0 +1,41 @@
+---
+- name: install NFS server
+  apt:
+    force_apt_get: true
+    install_recommends: false
+    name:
+      - "nfs-kernel-server"
+      - "nfs-common"
+      - "portmap"
+  notify:
+    - restart NFS
+    - restart RPCBind
+
+- name: ensure {{ exports.path }} directory exists
+  file:
+    path: "{{ exports.path }}"
+    recurse: true
+    state: directory
+
+- name: export the {{ exports.path }} directory
+  lineinfile:
+    line: '{{ exports.path }} {{ exports.ip_range }}(rw,sync,no_subtree_check,no_root_squash,insecure)'
+    path: '/etc/exports'
+    state: present
+  notify: export shares
+
+- name: protect the NFS
+  lineinfile:
+    insertafter: '^\s*#'
+    line: 'rpcbind nfsd : ALL'
+    path: '/etc/hosts.deny'
+    state: present
+  notify: restart RPCBind
+
+- name: allow local IP range access to the NFS
+  lineinfile:
+    insertafter: '^\s*#'
+    line: 'rpcbind nfsd : {{ exports.ip_range }}'
+    path: '/etc/hosts.allow'
+    state: present
+  notify: restart RPCBind

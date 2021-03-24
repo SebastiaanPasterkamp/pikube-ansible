@@ -35,7 +35,7 @@
 - name: allow local IP range access to the NFS
   lineinfile:
     insertafter: '^\s*#'
-    line: 'rpcbind nfsd : {{ exports.ip_range }}'
+    line: 'rpcbind nfs : {{ exports.ip_range }}, 127.0.0.1, [::1], LOCAL'
     path: '/etc/hosts.allow'
-    state: present
+    regexp: '^rpcbind'
   notify: restart RPCBind

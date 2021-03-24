@@ -38,7 +38,7 @@
   become: yes
   become_method: sudo
   changed_when: false
-  shell: kubeadm token list | awk 'NR == 2 { print $1 }'
+  shell: kubeadm token create
   register: k8s_token
 
 - name: save k8s token

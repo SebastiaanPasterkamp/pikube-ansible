@@ -5,7 +5,7 @@ all:
     pikube-master:
       ansible_host: 192.168.178.33
     pikube-node-01:
-      ansible_host: 192.168.178.32
+      ansible_host: 192.168.178.34
   vars:
     ansible_python_interpreter: /usr/bin/python
     ansible_user: pi

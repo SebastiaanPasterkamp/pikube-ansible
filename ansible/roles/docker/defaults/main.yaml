@@ -14,7 +14,7 @@ docker:
     "deb https://download.docker.com/linux/{{ os_id }} {{ os_code }} stable"
 
 daemon:
-  # registry-mirrors: []
+  registry-mirrors: ["https://docker-mirror.pikube.dev:32443"]
   # data-root: "/var/lib/docker"
   exec-opts: ["native.cgroupdriver=systemd"]
   storage-driver: "overlay2"

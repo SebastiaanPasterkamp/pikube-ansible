@@ -16,7 +16,7 @@ Using references from:
     ```
 3. Check the block device file name assigned to the MicroSD card:
     ```bash
-    dmesg | tail -n 5
+    lsblk -pf
     ```
 4. Write the Raspbian image to the SD card:
     ```bash
@@ -66,6 +66,11 @@ Using references from:
     Use either `pikube-master` for the first Kubernetes node, which will become
     the controller, or `pikube-node-01` and up for each new worker node added to
     the cluster.
+10. Unmount the disks before removing the drive:
+    ```bash
+    sync
+    umount $MOUNT/*
+    ```
 
 ## Provisioning with Ansible
 

@@ -6,6 +6,8 @@ all:
       ansible_host: 192.168.178.33
     pikube-node-01:
       ansible_host: 192.168.178.34
+    pikube-node-02:
+      ansible_host: 192.168.178.35
   vars:
     ansible_python_interpreter: /usr/bin/python
     ansible_user: pi
@@ -19,6 +21,7 @@ all:
           #     type: ext4
           #     opts: noatime,rw,nouser
         pikube-node-01:
+        pikube-node-02:
       vars:
         gpu_mem: 16
         arm_64bit: 1

@@ -9,6 +9,7 @@
     - kubernetes_master
 - hosts:
     - pikube-node-01
+    - pikube-node-02
   roles:
     - raspberry_pi
     - docker

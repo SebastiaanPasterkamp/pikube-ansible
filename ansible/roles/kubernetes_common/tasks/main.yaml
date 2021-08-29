@@ -13,7 +13,11 @@
 - name: add apt-key for k8s
   apt_key:
     id: '{{ kubernetes.apt_key_id }}'
-    url: '{{ kubernetes.apt_key_url }}'
+    keyring: '{{ kubernetes.apt_key_ring }}'
+    # url: '{{ kubernetes.apt_key_url }}'
+    keyserver: '{{ kubernetes.apt_key_server }}'
+    state: present
+  ignore_errors: yes
 
 - name: add apt-repository for Kubernetes
   apt_repository:

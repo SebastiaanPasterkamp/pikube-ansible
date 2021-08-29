@@ -18,6 +18,15 @@
 
 - meta: flush_handlers
 
+- name: unhold Docker for updates
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: install
+  with_items:
+    - containerd.io
+    - docker-ce
+    - docker-ce-cli
+
 - name: install Docker
   apt:
     force_apt_get: true

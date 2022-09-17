@@ -133,3 +133,17 @@ make deploy \
     PLAYBOOK="raspberry-pi.yaml" \
     INVENTORY="inventory/raspberry-pi.yaml"
 ```
+
+### Update libseccomp
+
+curl http://ftp.us.debian.org/debian/pool/main/libs/libseccomp/libseccomp2_2.5.1-1_armhf.deb --output libseccomp2_2.5.1-1_armhf.deb
+sudo dpkg -i libseccomp2_2.5.1-1_armhf.deb
+
+### Auto restart on Kernel Panic
+
+write the following to `/etc/sysctl.d/reboot-on-panic.conf`:
+
+```bash
+# reboot at kernel panic (seconds before reboot).
+kernel.panic = 5
+```

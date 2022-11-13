@@ -1,44 +1,56 @@
 # Raspberry Pi Kubernetes cluster
 
 Using references from:
+
 * https://illegalexception.schlichtherle.de/kubernetes/2019/09/12/provisioning-a-kubernetes-cluster-on-raspberry-pi-with-ansible/
 * https://itnext.io/building-a-kubernetes-cluster-on-raspberry-pi-and-low-end-equipment-part-1-a768359fbba3
 * https://github.com/chrismeyersfsu/role-iptables
 
 ## Setting up the RPi disks
 
-1. Get the latest Raspbian (Buster) Lite image from the
-    Raspberry Pi
-    [Download page](https://www.raspberrypi.org/downloads/raspbian/).
-2. Unzip the zipped image file in your downloads folder:
+1. Get the latest 64bit Raspberry Pi OS Lite image from the Raspberry Pi
+    [Download page](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-64-bit).
+
+2. Extract the compressed image file in your downloads folder:
+
     ```bash
-    unzip 2020-02-13-raspbian-buster-lite.zip
+    xz -d -v 2022-09-06-raspios-bullseye-arm64-lite.img.xz
     ```
+
 3. Check the block device file name assigned to the MicroSD card:
+
     ```bash
     lsblk -pf
     ```
+
 4. Write the Raspbian image to the SD card:
+
     ```bash
     sudo dd \
         bs=1M status=progress \
         if=2020-02-13-raspbian-buster-lite.img \
         of=/dev/mmcblk0
     ```
-5. Mount the newly written file systems on the SD using your preferred file
-    system browser. Once the file systems are mounted, export the common path
-    part to a variable. We'll continue to use this variable in the examples
-    below. Of course these commands can be tailored to your particular setup.
+
+5. Mount the newly written file systems on the SD at your preferred mounting
+    locations. Once the file systems are mounted, export the common path part to
+    a variable. We'll continue to use this variable in the examples below. Of
+    course these commands can be tailored to your particular setup.
+
     ```bash
     # e.g. for /path/to/boot
     export MOUNT=/path/to
     ```
+
 6. Enable the ssh service on boot, by creating the `ssh` file in the boot
     partition:
+
     ```bash
     touch $MOUNT/boot/ssh
     ```
+
 7. Enable password-less login to the `pi` user:
+
     ```bash
     mkdir \
         --mode=700 \
@@ -48,25 +60,33 @@ Using references from:
         $MOUNT/rootfs/home/pi/.ssh/authorized_keys
     chmod 600 $MOUNT/rootfs/home/pi/.ssh/authorized_keys
     ```
+
 8. Disable the default `pi` password:
+
     ```bash
     sudo sed -ri \
         's/^pi:[^:]+:/pi::/' \
         $MOUNT/rootfs/etc/shadow
     ```
+
     Although this step is optional, it is highly recommended. Alternatively you
     can change the default password once you're logged in.
-9. Change the default hostname:
+
+9.  Change the default hostname:
+
     ```bash
     sudo sed -ri \
       's/raspberrypi/pikube-node-01/g' \
       $MOUNT/rootfs/etc/hostname \
       $MOUNT/rootfs/etc/hosts
     ```
+
     Use either `pikube-master` for the first Kubernetes node, which will become
     the controller, or `pikube-node-01` and up for each new worker node added to
     the cluster.
+
 10. Unmount the disks before removing the drive:
+
     ```bash
     sync
     umount $MOUNT/*
@@ -82,7 +102,8 @@ running.
 ```bash
 python3 -m venv .pikube
 . .pikube/bin/activate
-pip install -r requirements.txt
+python -m pip install wheel
+python -m pip install -r requirements.txt
 ```
 
 ### Test ansible with docker

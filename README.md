@@ -149,6 +149,11 @@ Once all Pi's are running you can deploy the Kubernetes cluster using the
 following command:
 
 ```bash
+make dry-run \
+    VERBOSITY="-vv" \
+    PLAYBOOK="raspberry-pi.yaml" \
+    INVENTORY="inventory/raspberry-pi.yaml"
+
 make deploy \
     VERBOSITY="-vv" \
     PLAYBOOK="raspberry-pi.yaml" \

@@ -34,7 +34,16 @@ debug:
 
 #: Yaml lint the ansible directory
 lint:
-	yamllint ansible/
+	yamllint ansible/inventory ansible/roles ansible/*.yaml && \
+	cd ansible && \
+	ansible-playbook \
+		--syntax-check \
+		--inventory "inventory/docker-test.yaml" \
+		"docker-test.yaml" && \
+	ansible-playbook \
+		--syntax-check \
+		--inventory "inventory/raspberry-pi.yaml" \
+		"raspberry-pi.yaml"
 
 #: Deploys the raspberry-pi playbook; also used by test for the test playbook
 deploy:
@@ -42,6 +51,16 @@ deploy:
 	ansible-playbook \
 		--private-key ../docker/ssh/id_rsa \
 		--inventory "$(INVENTORY)" \
+		"$(PLAYBOOK)" \
+		"$(VERBOSITY)"
+
+#: Test-runs the raspberry-pi playbook
+dry-run:
+	cd ansible && \
+	ansible-playbook \
+		--private-key ../docker/ssh/id_rsa \
+		--inventory "$(INVENTORY)" \
+		--check \
 		"$(PLAYBOOK)" \
 		"$(VERBOSITY)"
 

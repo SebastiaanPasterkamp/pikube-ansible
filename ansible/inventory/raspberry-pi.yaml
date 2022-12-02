@@ -3,11 +3,13 @@ all:
   hosts:
     # Use only IP addresses here!
     pikube-master:
-      ansible_host: 192.168.178.33
+      ansible_host: 192.168.68.150
     pikube-node-01:
-      ansible_host: 192.168.178.34
+      ansible_host: 192.168.68.151
     pikube-node-02:
-      ansible_host: 192.168.178.35
+      ansible_host: 192.168.68.152
+    pikube-node-03:
+      ansible_host: 192.168.68.153
   vars:
     ansible_python_interpreter: /usr/bin/python
     ansible_user: pi

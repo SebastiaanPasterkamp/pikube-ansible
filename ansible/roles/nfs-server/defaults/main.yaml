@@ -5,4 +5,4 @@ os_code: '{{ ansible_lsb.codename.lower() }}'
 
 exports:
   path: /media/storage/exports
-  ip_range: 192.168.178.0/24
+  ip_range: 192.168.68.0/24

@@ -24,6 +24,7 @@ all:
           #     opts: noatime,rw,nouser
         pikube-node-01:
         pikube-node-02:
+        pikube-node-03:
       vars:
         gpu_mem: 16
         arm_64bit: 1

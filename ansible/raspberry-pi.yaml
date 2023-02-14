@@ -10,6 +10,7 @@
 - hosts:
     - pikube-node-01
     - pikube-node-02
+    - pikube-node-03
   roles:
     - raspberry_pi
     - docker

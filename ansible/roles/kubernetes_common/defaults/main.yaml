@@ -6,8 +6,6 @@ version:
   kubernetes_cni: 0.8.7-00  # 0.7.5-00
 
 kubernetes:
-  apt_key_id: 59FE0256827269DC81578F928B57C5C2836F4BEB
-  apt_key_server: keyserver.ubuntu.com
-  apt_key_ring: /etc/apt/trusted.gpg.d/kubernetes.io.gpg
-  # apt_key_url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+  apt_key_id: B53DC80D13EDEF05
+  apt_key_url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
   apt_repository: "deb https://apt.kubernetes.io/ kubernetes-xenial main"

@@ -57,6 +57,15 @@
     replace: '\1 systemd.unified_cgroup_hierarchy=0'
   notify: reboot system
 
+- name: enable reboot on panic
+  blockinfile:
+    path: /etc/sysctl.d/reboot-on-panic.conf
+    block: |
+      # reboot at kernel panic (seconds before reboot).
+      kernel.panic = 5
+    create: true
+  notify: reboot system
+
 - name: configure the temperature watchdog
   blockinfile:
     path: /boot/config.txt

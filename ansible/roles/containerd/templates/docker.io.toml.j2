@@ -1,0 +1,8 @@
+server = "https://docker.io"
+
+[host."http://docker-mirror.pikube.dev"]
+  capabilities = ["pull", "resolve"]
+  ca = "/etc/containerd/certs.d/docker-mirror.pikube.dev/ca.crt"
+
+[host."https://registry-1.docker.io"]
+  capabilities = ["pull", "resolve"]

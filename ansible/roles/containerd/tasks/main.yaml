@@ -1,0 +1,95 @@
+---
+- name: Make sure ansible_lsb is set
+  assert:
+    that:
+      - ansible_lsb.id is defined
+      - ansible_lsb.codename is defined
+    fail_msg: "Please install 'lsb-release' or equivalent"
+
+- name: add apt-key for Docker
+  apt_key:
+    id: "{{ docker.apt_key_id }}"
+    url: "{{ docker.apt_key_url }}"
+
+- name: add apt-repository for Docker
+  apt_repository:
+    repo: "{{ docker.apt_repository }}"
+  notify: apt-get update
+
+- meta: flush_handlers
+
+- name: unhold Docker for updates
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: install
+  with_items:
+    - containerd.io
+
+- name: install containerd
+  apt:
+    force_apt_get: true
+    install_recommends: false
+    name:
+      - "containerd.io={{ version.containerd }}"
+  notify: restart containerd
+
+- name: hold containerd updates
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  with_items:
+    - containerd.io
+
+- name: Configure containerd
+  block:
+    - name: ensure etc/containerd/certs.d directories exists
+      file:
+        path: "{{ item }}"
+        recurse: true
+        state: directory
+        owner: root
+        group: root
+        mode: 'u=rwx,g=rx,o=rx'
+      loop:
+        - /etc/containerd/certs.d
+        - /etc/containerd/certs.d/docker.io
+        - /etc/containerd/certs.d/docker-mirror.pikube.dev
+        - /etc/containerd/certs.d/docker-registry.pikube.dev
+
+    - name: install containerd configuration
+      template:
+        dest: /etc/containerd/config.toml
+        src: config.toml.j2
+        owner: root
+        group: root
+        mode: 'u=rw,g=r,o=r'
+      notify: restart containerd
+
+    - name: configure mirror for docker.io
+      template:
+        dest: /etc/containerd/certs.d/docker.io/hosts.toml
+        src: docker.io.toml.j2
+        owner: root
+        group: root
+        mode: 'u=rw,g=r,o=r'
+      notify: restart containerd
+
+    - name: configure private mirror
+      template:
+        dest: /etc/containerd/certs.d/docker-mirror.pikube.dev/hosts.toml
+        src: docker-mirror.pikube.dev.toml.j2
+        owner: root
+        group: root
+        mode: 'u=rw,g=r,o=r'
+      notify: restart containerd
+
+    - name: configure private registry
+      template:
+        dest: /etc/containerd/certs.d/docker-registry.pikube.dev/hosts.toml
+        src: docker-registry.pikube.dev.toml.j2
+        owner: root
+        group: root
+        mode: 'u=rw,g=r,o=r'
+      notify: restart containerd
+
+- meta: flush_handlers

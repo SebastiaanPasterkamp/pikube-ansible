@@ -5,11 +5,10 @@
     update_cache: true
 
 # Don't use systemd ansible command; it drops the ssh connection and fails
-- name: restart Docker
+- name: restart containerd
   shell: |
-    systemctl daemon-reload
-    systemctl enable docker.service
-    systemctl restart docker.service
-    systemctl is-active docker.service
+    systemctl enable containerd.service
+    systemctl restart containerd.service
+    systemctl is-active containerd.service
   async: 1
   poll: 0

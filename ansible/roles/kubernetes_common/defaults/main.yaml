@@ -2,8 +2,8 @@
 ansible_become: true
 
 version:
-  kubernetes: 1.20.2-00     # 1.18.2-00
-  kubernetes_cni: 0.8.7-00  # 0.7.5-00
+  kubernetes: 1.26.1-00
+  kubernetes_cni: 1.2.0-00
 
 kubernetes:
   apt_key_id: B53DC80D13EDEF05

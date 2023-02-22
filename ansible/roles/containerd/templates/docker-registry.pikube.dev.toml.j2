@@ -1,4 +1,7 @@
-server = "https://docker-registry.pikube.dev"
+version = 2
 
-[host."http://docker-registry.pikube.dev"]
-  ca = "/etc/containerd/certs.d/docker-registry.pikube.dev/ca.crt"
+server = "https://docker-registry.pikube.dev:31443"
+
+[host."https://docker-registry.pikube.dev:31443"]
+  capabilities = ["pull", "resolve", "push"]
+  ca = "ca.crt"

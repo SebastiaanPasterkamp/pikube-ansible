@@ -18,7 +18,7 @@
 
 - meta: flush_handlers
 
-- name: unhold Docker for updates
+- name: unhold containerd for updates
   dpkg_selections:
     name: "{{ item }}"
     selection: install
@@ -42,19 +42,14 @@
 
 - name: Configure containerd
   block:
-    - name: ensure etc/containerd/certs.d directories exists
+    - name: ensure /etc/containerd/certs.d directories exists
       file:
-        path: "{{ item }}"
+        path: /etc/containerd
         recurse: true
         state: directory
         owner: root
         group: root
-        mode: 'u=rwx,g=rx,o=rx'
-      loop:
-        - /etc/containerd/certs.d
-        - /etc/containerd/certs.d/docker.io
-        - /etc/containerd/certs.d/docker-mirror.pikube.dev
-        - /etc/containerd/certs.d/docker-registry.pikube.dev
+        mode: 'u=rwx,g=rx,o='
 
     - name: install containerd configuration
       template:
@@ -65,31 +60,53 @@
         mode: 'u=rw,g=r,o=r'
       notify: restart containerd
 
-    - name: configure mirror for docker.io
-      template:
-        dest: /etc/containerd/certs.d/docker.io/hosts.toml
-        src: docker.io.toml.j2
+    - name: "ensure /etc/containerd/certs.d sub-directories exists"
+      file:
+        path: "/etc/containerd/certs.d/{{ item }}"
+        recurse: true
+        state: directory
         owner: root
         group: root
-        mode: 'u=rw,g=r,o=r'
-      notify: restart containerd
+        mode: 'u=rwx,g=rx,o='
+      loop:
+        - docker.io
+        - docker-mirror.pikube.dev:31443
+        - docker-registry.pikube.dev:31443
 
-    - name: configure private mirror
+    - name: "configure public and private registries"
       template:
-        dest: /etc/containerd/certs.d/docker-mirror.pikube.dev/hosts.toml
-        src: docker-mirror.pikube.dev.toml.j2
+        dest: /etc/containerd/certs.d/{{ item }}/hosts.toml
+        src: "{{ item.split(':') | first }}.toml.j2"
         owner: root
         group: root
         mode: 'u=rw,g=r,o=r'
       notify: restart containerd
+      loop:
+        - docker.io
+        - docker-mirror.pikube.dev:31443
+        - docker-registry.pikube.dev:31443
 
-    - name: configure private registry
-      template:
-        dest: /etc/containerd/certs.d/docker-registry.pikube.dev/hosts.toml
-        src: docker-registry.pikube.dev.toml.j2
-        owner: root
-        group: root
-        mode: 'u=rw,g=r,o=r'
+    - name: "install ca.crt for private registries"
+      copy:
+        src: 'build/pikube.ca.crt'
+        dest: '/etc/containerd/certs.d/{{ item }}/ca.crt'
+        mode: 'u=r,g=r,o='
+      when: "'build/pikube.ca.crt' is file"
       notify: restart containerd
+      loop:
+        - docker.io
+        - docker-mirror.pikube.dev:31443
+        - docker-registry.pikube.dev:31443
+
+- name: Update hosts file with private registry IP and hostname
+  lineinfile:
+    dest: /etc/hosts
+    regexp: ' {{ item }}$'
+    line: '{{ hostvars["pikube-master"].ansible_default_ipv4.address }} {{ item }}'
+    state: present
+  when: hostvars["pikube-master"].ansible_default_ipv4.address is defined
+  loop:
+    - docker-mirror.pikube.dev
+    - docker-registry.pikube.dev
 
 - meta: flush_handlers

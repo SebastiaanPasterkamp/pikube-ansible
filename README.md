@@ -35,7 +35,7 @@ Using references from:
 5. Mount the newly written file systems on the SD at your preferred mounting
     locations. Once the file systems are mounted, export the common path part to
     a variable. We'll continue to use this variable in the examples below. Of
-    course these commands can be tailored to your particular setup.
+    course, these commands can be tailored to your particular setup.
 
     ```bash
     # e.g. for /path/to/boot
@@ -69,7 +69,7 @@ Using references from:
         $MOUNT/rootfs/etc/shadow
     ```
 
-    Although this step is optional, it is highly recommended. Alternatively you
+    Although this step is optional, it is highly recommended. Alternatively, you
     can change the default password once you're logged in.
 
 9.  Change the default hostname:
@@ -124,20 +124,20 @@ This will:
     mentioned inventory file.
 4. Run `make shutdown` to bring down the docker containers once we're finished.
 
-### Prepare the ansible playbook
+### Prepare the ansible-playbook
 
 #### Define the target Pi's
 
 Update the `ansible/inventory/raspberry-pi.yaml` and configure the target
-hosts by name, and IP address. Ony use IP addresses, so they can be re-used
+hosts by name and IP address. Only use IP addresses, so they can be reused
 in the `/etc/hosts` files on the target machines. Do not use DNS names.
 
 #### Configure external storage
 
-Optionally define a known external storage device by `uuid` in the `mounts`
-part. The mount path for the external storage may be used as docker data-root if
-configured so below. You can find the UUID's while preparing the raspberry pi
-image using the following command:
+Optionally define a known external storage device by `uuid` in part of the
+`mounts`. The mount path for the external storage may be used as docker
+data-root if configured so below. You can find the UUIDs while preparing the
+raspberry pi image using the following command:
 
 ```bash
 lsblk -pf
@@ -158,13 +158,4 @@ make deploy \
     VERBOSITY="-vv" \
     PLAYBOOK="raspberry-pi.yaml" \
     INVENTORY="inventory/raspberry-pi.yaml"
-```
-
-### Auto restart on Kernel Panic
-
-write the following to `/etc/sysctl.d/reboot-on-panic.conf`:
-
-```bash
-# reboot at kernel panic (seconds before reboot).
-kernel.panic = 5
 ```

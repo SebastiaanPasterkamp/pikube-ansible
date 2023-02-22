@@ -1,4 +1,7 @@
-server = "https://docker-mirror.pikube.dev"
+version = 2
 
-[host."http://docker-mirror.pikube.dev"]
-  ca = "/etc/containerd/certs.d/docker-mirror.pikube.dev/ca.crt"
+server = "https://docker-mirror.pikube.dev:31443"
+
+[host."https://docker-mirror.pikube.dev:31443"]
+  capabilities = ["pull", "resolve"]
+  ca = "ca.crt"

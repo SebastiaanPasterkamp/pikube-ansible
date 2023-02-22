@@ -7,9 +7,13 @@
 # Don't use systemd ansible command; it drops the ssh connection and fails
 - name: restart Kubernetes
   shell: |
-    systemctl daemon-reload
+    systemctl restart containerd
     systemctl enable kubelet.service
     systemctl restart kubelet.service
     systemctl is-active kubelet.service
   async: 1
   poll: 0
+
+- name: reboot system
+  reboot: {}
+  when: can_reboot|default(true)

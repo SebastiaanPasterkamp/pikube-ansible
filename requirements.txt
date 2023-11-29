@@ -1,7 +1,7 @@
 ansible==5.9.0
 argcomplete==2.0.0
 cffi==1.15.1
-cryptography==37.0.2
+cryptography==41.0.6
 importlib-metadata==4.13.0
 Jinja2==3.1.2
 MarkupSafe==2.1.2
